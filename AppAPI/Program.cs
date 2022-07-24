@@ -1,19 +1,29 @@
+using AppAPI.Data;
+using AppAPI.Extensions;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.ApplicationServices(builder.Configuration);
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// enabling auto migrations
+using var appScope = app.Services.CreateScope();
+var appServices = appScope.ServiceProvider;
+try
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    var dbContext = appServices.GetService<StoreDataContext>();
+    await dbContext.Database.MigrateAsync();
+}
+catch (Exception ex)
+{
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    logger.LogError(ex, ex.Message);    
 }
 
 app.UseHttpsRedirection();
