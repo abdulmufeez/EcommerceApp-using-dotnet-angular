@@ -14,17 +14,23 @@ builder.Services.AddEndpointsApiExplorer();
 var app = builder.Build();
 
 // enabling auto migrations
-using var appScope = app.Services.CreateScope();
-var appServices = appScope.ServiceProvider;
-try
+using (var appScope = app.Services.CreateScope())
 {
-    var dbContext = appServices.GetService<StoreDataContext>();
-    await dbContext.Database.MigrateAsync();
-}
-catch (Exception ex)
-{
-    var logger = app.Services.GetRequiredService<ILogger<Program>>();
-    logger.LogError(ex, ex.Message);    
+    var appServices = appScope.ServiceProvider;
+    var loggerFactory = appServices.GetRequiredService<ILoggerFactory>();
+    try
+    {
+        var dbContext = appServices.GetRequiredService<StoreDataContext>();
+        await dbContext.Database.MigrateAsync();
+
+        await StoreDataContextDataSeed.SeedAsync(dbContext, loggerFactory);
+    }
+    catch (Exception ex)
+    {
+        //var logger = app.Services.GetRequiredService<ILogger<Program>>();
+        var logger = loggerFactory.CreateLogger<Program>();
+        logger.LogError(ex, "An Error occurred during migrations... \n" + ex.Message);
+    }
 }
 
 app.UseHttpsRedirection();
