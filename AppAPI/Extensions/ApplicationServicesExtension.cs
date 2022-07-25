@@ -1,6 +1,7 @@
 using AppAPI_Core.Interfaces;
 using AppAPI_Core.Respositories;
 using AppAPI_Infrastructure.Data;
+using AppAPI_Infrastructure.Respositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace AppAPI.Extensions
@@ -12,6 +13,8 @@ namespace AppAPI.Extensions
         {
             // services dependancy injection
             services.AddScoped<IProductRepository, ProductRespository>();
+            // this is used when we dont know which type T is inserted in service
+            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
             // db configs
             services.AddDbContext<StoreDataContext>( x => {
