@@ -1,4 +1,4 @@
-using AppAPI.Data;
+using AppAPI_Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace AppAPI.Extensions

@@ -1,4 +1,4 @@
-namespace AppAPI.Entities
+namespace AppAPI_Core.Entities
 {
     public class Product
     {

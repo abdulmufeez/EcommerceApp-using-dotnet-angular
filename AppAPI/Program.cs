@@ -1,5 +1,6 @@
-using AppAPI.Data;
+
 using AppAPI.Extensions;
+using AppAPI_Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

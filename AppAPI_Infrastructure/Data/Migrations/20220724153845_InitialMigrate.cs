@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace AppAPI.Data.Migrations
+namespace AppAPI_Infrastructure.Data.Migrations
 {
     public partial class InitialMigrate : Migration
     {
