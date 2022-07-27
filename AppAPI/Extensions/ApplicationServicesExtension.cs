@@ -1,3 +1,4 @@
+using AppAPI.Helpers;
 using AppAPI_Core.Interfaces;
 using AppAPI_Infrastructure.Data;
 using AppAPI_Infrastructure.Respositories;
@@ -14,6 +15,8 @@ namespace AppAPI.Extensions
             
             // this is used when we dont know which type T is inserted in service
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+            services.AddAutoMapper(typeof(MappingProfiles));
 
             // db configs
             services.AddDbContext<StoreDataContext>( x => {
