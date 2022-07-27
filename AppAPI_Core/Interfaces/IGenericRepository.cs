@@ -1,4 +1,5 @@
 using AppAPI_Core.Entities;
+using AppAPI_Core.Specifications;
 
 namespace AppAPI_Core.Interfaces
 {   
@@ -8,5 +9,7 @@ namespace AppAPI_Core.Interfaces
     {
         Task<T> GetByIdAsync(int id);
         Task<IReadOnlyList<T>> ListAllAsync();
+        Task<T> GetEntityWithSpecs(ISpecification<T> spec);
+        Task<IReadOnlyList<T>> ListAsync(ISpecification<T> spec);
     }
 }
