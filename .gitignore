@@ -5,9 +5,9 @@
 
 #custom
 .vscode/*
-*.db
-*.db-shm
-*.db-wal
+# *.db
+# *.db-shm
+# *.db-wal
 
 # User-specific files
 *.rsuser
