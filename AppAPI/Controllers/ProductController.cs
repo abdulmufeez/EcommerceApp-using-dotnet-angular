@@ -1,4 +1,5 @@
 using AppAPI.Dtos;
+using AppAPI.Errors;
 using AppAPI_Core.Entities;
 using AppAPI_Core.Interfaces;
 using AppAPI_Core.Specifications;
@@ -27,11 +28,16 @@ namespace AppAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProductByIdAsync(int id)
+        // proper documenting for swagger
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<ProductToReturnDto>> GetProductByIdAsync(int id)
         {
             var spec = new ProductsWithTypeAndBrandSpecifications(id);
+            var product = await _productRepo.GetEntityWithSpecs(spec);
+            if (product is null) return NotFound(new ApiResponse(404));
             return Ok(_mapper.Map<Product,ProductToReturnDto>
-                (await _productRepo.GetEntityWithSpecs(spec)));
+                (product));
         }
     }
 }

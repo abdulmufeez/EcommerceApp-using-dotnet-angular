@@ -1,40 +1,24 @@
-
-using AppAPI.Errors;
 using AppAPI.Extensions;
+using AppAPI.Helpers;
 using AppAPI.Middlewares;
 using AppAPI_Infrastructure.Data;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.ApplicationServices(builder.Configuration);
 
+builder.Services.AddAutoMapper(typeof(MappingProfiles));
+
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 
-// telling app to give which type of response when strict with error array  
-builder.Services.Configure<ApiBehaviorOptions>(options => 
-{
-    options.InvalidModelStateResponseFactory = actionContext => 
-    {
-        // extracting errors from modelcontext(httpcontext)
-        var errors = actionContext.ModelState
-            .Where(e => e.Value.Errors.Count > 0 )
-            .SelectMany(x => x.Value.Errors)
-            .Select(x => x.ErrorMessage).ToArray();
+builder.Services.SwaggerdocumentationExtension();
 
-        var errorResponse = new ApiValidationErrorResponse
-        {
-            Errors = errors
-        };
 
-        return new BadRequestObjectResult(errorResponse);
-    };
-});
+
+
 
 var app = builder.Build();
 
@@ -69,6 +53,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseAuthorization();
+
+app.UseSwaggerDocumentation();
 
 app.MapControllers();
 
