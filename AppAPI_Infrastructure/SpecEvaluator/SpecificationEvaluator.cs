@@ -27,6 +27,11 @@ namespace AppAPI_Infrastructure.SpecEvaluator
                 query = query.OrderByDescending(spec.OderByDesc);
             }
 
+            if (spec.IsPagingEnabled)
+            {
+                query = query.Skip(spec.Skip).Take(spec.Take);
+            }
+
             // applyin one by one Icludes(x => x.Condition) to db data
             query = spec.Includes.Aggregate(query, (current, include) => current.Include(include));
 

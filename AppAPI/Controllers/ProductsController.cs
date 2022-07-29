@@ -1,5 +1,6 @@
 using AppAPI.Dtos;
 using AppAPI.Errors;
+using AppAPI.Helpers;
 using AppAPI_Core.Entities;
 using AppAPI_Core.Interfaces;
 using AppAPI_Core.Specifications;
@@ -13,18 +14,25 @@ namespace AppAPI.Controllers
         private readonly IGenericRepository<Product> _productRepo;
         private readonly IMapper _mapper;
 
-        public ProductsController(IGenericRepository<Product> productRepo, IMapper mapper) 
+        public ProductsController(IGenericRepository<Product> productRepo, IMapper mapper)
         {
             _mapper = mapper;
             _productRepo = productRepo;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<Product>>> GetProductsAsync(string sort, int? brandId, int? typeId)
+        public async Task<ActionResult<Pagination<Product>>> GetProductsAsync(
+            [FromQuery] ProductSpecParams productSpecParams)
         {
-            var Spec = new ProductsWithTypeAndBrandSpecifications(sort, brandId, typeId);
-            return Ok(_mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDto>>
-                (await _productRepo.ListAsync(Spec)));
+            var spec = new ProductsWithTypeAndBrandSpecifications(productSpecParams);
+
+            var countSpec = new ProductWithFiltersForCountSpecification(productSpecParams);
+
+            var totalItems = await _productRepo.CountAsync(countSpec);
+
+            var data = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDto>>(await _productRepo.ListAsync(spec));
+
+            return Ok(new Pagination<ProductToReturnDto>(productSpecParams.PageIndex, productSpecParams.PageSize, totalItems, data));
         }
 
         [HttpGet("{id}")]
@@ -36,7 +44,7 @@ namespace AppAPI.Controllers
             var spec = new ProductsWithTypeAndBrandSpecifications(id);
             var product = await _productRepo.GetEntityWithSpecs(spec);
             if (product is null) return NotFound(new ApiResponse(404));
-            return Ok(_mapper.Map<Product,ProductToReturnDto>
+            return Ok(_mapper.Map<Product, ProductToReturnDto>
                 (product));
         }
     }
