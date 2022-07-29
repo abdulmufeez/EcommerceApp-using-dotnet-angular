@@ -20,6 +20,21 @@ namespace AppAPI_Infrastructure.Data
 
             // reading the config file with in the project assembly
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+            //converting decimal to int for sqlite because it doesn't suuport decimal values
+            if (Database.ProviderName is "Microsoft.EntityFrameworkCore.Sqlite")
+            {
+                foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+                {
+                    var entityProperties = entityType.ClrType.GetProperties()
+                        .Where(p => p.PropertyType == typeof(decimal));
+
+                    foreach (var property in entityProperties)
+                    {
+                        modelBuilder.Entity(entityType.Name).Property(property.Name).HasConversion<double>();
+                    }
+                }
+            }
         }
     }
 }

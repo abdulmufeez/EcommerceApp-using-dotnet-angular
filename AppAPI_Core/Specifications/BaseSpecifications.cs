@@ -21,10 +21,24 @@ namespace AppAPI_Core.Specifications
         public List<Expression<Func<T, object>>> Includes { get;} = 
             new List<Expression<Func<T, object>>>();
 
+        public Expression<Func<T, object>> OderBy {get; private set; } 
+
+        public Expression<Func<T, object>> OderByDesc {get; private set; }
+
         // helper method for includes
         protected void AddInclude (Expression<Func<T, object>> includeExpression)
         {
             Includes.Add(includeExpression);
+        }
+
+        protected void AddOrderBy (Expression<Func<T, object>> orderByExpression)
+        {
+            OderBy = orderByExpression;
+        }
+
+        protected void AddOrderByDesc (Expression<Func<T, object>> orderByDescExpression)
+        {
+            OderByDesc = orderByDescExpression;
         }
     }
 }

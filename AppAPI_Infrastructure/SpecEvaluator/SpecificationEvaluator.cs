@@ -17,6 +17,16 @@ namespace AppAPI_Infrastructure.SpecEvaluator
                 query = query.Where(spec.Condition);
             }
 
+            if (spec.OderBy is not null)
+            {
+                query = query.OrderBy(spec.OderBy);
+            }
+
+            if (spec.OderByDesc is not null)
+            {
+                query = query.OrderByDescending(spec.OderByDesc);
+            }
+
             // applyin one by one Icludes(x => x.Condition) to db data
             query = spec.Includes.Aggregate(query, (current, include) => current.Include(include));
 

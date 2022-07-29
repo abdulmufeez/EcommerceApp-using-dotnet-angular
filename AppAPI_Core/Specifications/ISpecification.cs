@@ -6,5 +6,7 @@ namespace AppAPI_Core.Specifications
     { 
         Expression<Func<T, bool>> Condition { get; }        
         List<Expression<Func<T, object>>> Includes { get; }
+        Expression<Func<T, object>> OderBy { get; }
+        Expression<Func<T, object>> OderByDesc { get; }
     }
 }
