@@ -4,6 +4,7 @@ using AppAPI_Infrastructure.Data;
 using AppAPI_Infrastructure.Respositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AppAPI.Extensions
 {
@@ -42,6 +43,14 @@ namespace AppAPI.Extensions
 
                     return new BadRequestObjectResult(errorResponse);
                 };
+            });
+
+            services.AddCors(opt => 
+            {
+                opt.AddPolicy("CorsPolicy", policy => 
+                {
+                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins(config.GetValue<string>("ClientUrl"));
+                });
             });
 
             return services;
